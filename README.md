@@ -20,7 +20,7 @@ These autonomous agents:
 
 ## 2. System Architecture
 
-```mermaid
+mermaid
 flowchart TD
     subgraph Enterprise Agents
         EA1[Agent Registration & Manifesto]
@@ -52,7 +52,7 @@ flowchart TD
     RP --> S1 --> S2 --> S3
     S3 -- Threshold >= 0.75 --> HMAC --> WH --> SIM --> DB
     S3 -- Score < 0.75 --> LOG
-```
+
 
 ---
 
@@ -122,7 +122,7 @@ flowchart TD
 ### Option A: Local Direct Execution (Recommended for Fast Testing)
 
 #### 1. Backend Setup
-```bash
+bash
 cd backend
 
 # Create virtual environment or use existing Python 3.11/3.12
@@ -134,11 +134,11 @@ pip install -r requirements.txt
 
 # Start FastAPI backend
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
+
 *The database and seed data (Swiggy, PhonePe, HDFC Bank, Flipkart, Zomato, Bajaj Auto) will automatically initialize on startup.*
 
 #### 2. Frontend Setup
-```bash
+bash
 cd frontend
 
 # Install dependencies
@@ -146,30 +146,30 @@ npm install
 
 # Start Vite dev server
 npm run dev -- --host 0.0.0.0 --port 3000
-```
-Open **`http://localhost:3000`** in any browser.
+
+Open ** https://asama-ai-snowy.vercel.app/** in any browser.
 
 ---
 
 ### Option B: Docker Compose
 
-```bash
+bash
 # In the root repository directory
 docker-compose up --build
-```
-- Frontend: `http://localhost:3000`
-- Backend API & Interactive Swagger Docs: `http://localhost:8000/docs`
+
+- Frontend: https://asama-ai-snowy.vercel.app/
+- Backend API & Interactive Swagger Docs: https://asama-ai-8m3c.onrender.com/docs
 
 ---
 
 ## 7. Automated Test Suite
 
-A comprehensive 10-test automated integration suite is provided in `backend/run_tests.py`:
+A comprehensive 10-test automated integration suite is provided in backend/run_tests.py`:
 
-```bash
+bash
 cd backend
 python run_tests.py
-```
+
 
 ### Verified Test Cases:
 1. `GET /api/v1/health` $\to$ Returns `{"status": "healthy"}`
