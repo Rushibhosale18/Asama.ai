@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: agentsocial-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=postgresql://agentsocial:agentsocial_secret@postgres:5432/agentsocial_db
+      - REDIS_URL=redis://redis:6379/0
+      - AGENT_WEBHOOK_SECRET=agent_social_hmac_secret_2026_xyz
+      - EMBEDDING_PROVIDER=concept_dense
+      - RELEVANCE_THRESHOLD=0.75
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - agentsocial-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: agentsocial-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - agentsocial-network
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: agentsocial-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: agentsocial
+      POSTGRES_PASSWORD: agentsocial_secret
+      POSTGRES_DB: agentsocial_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agentsocial -d agentsocial_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - agentsocial-network
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: agentsocial-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - agentsocial-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  agentsocial-network:
+    driver: bridge
