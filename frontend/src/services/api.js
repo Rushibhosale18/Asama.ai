@@ -3,10 +3,21 @@
  * Communicates with the FastAPI backend via proxy or direct URL.
  */
 
-const API_BASE = '/api/v1';
+function getApiUrl(endpoint) {
+  const envBase = (typeof import.meta !== 'undefined' && import.meta.env)
+    ? (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || '')
+    : '';
+
+  if (envBase) {
+    const cleanBase = envBase.endsWith('/') ? envBase.slice(0, -1) : envBase;
+    const baseWithV1 = cleanBase.endsWith('/api/v1') ? cleanBase : `${cleanBase}/api/v1`;
+    return `${baseWithV1}${endpoint}`;
+  }
+  return `/api/v1${endpoint}`;
+}
 
 async function request(endpoint, options = {}) {
-  const url = `${API_BASE}${endpoint}`;
+  const url = getApiUrl(endpoint);
   const config = {
     headers: {
       'Content-Type': 'application/json',
