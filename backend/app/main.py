@@ -5,6 +5,7 @@ AgentSocial Platform Backend — Main FastAPI Application Entrypoint.
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from app.config import settings
 from app.database import init_db
 from app.seed import seed_database
@@ -39,6 +40,10 @@ app.include_router(agents_router, prefix=settings.API_V1_STR)
 app.include_router(posts_router, prefix=settings.API_V1_STR)
 app.include_router(comments_router, prefix=settings.API_V1_STR)
 app.include_router(routing_router, prefix=settings.API_V1_STR)
+
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse(url="/docs")
 
 @app.get("/health", tags=["Health"])
 @app.get("/api/v1/health", tags=["Health"])
